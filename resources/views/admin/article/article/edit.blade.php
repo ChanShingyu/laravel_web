@@ -36,7 +36,7 @@
             <form class="form-horizontal form-bordered" action="/admin/article/save" method="post">
                 {{csrf_field()}}
                 <input type="hidden" name="id" value="{{$info->id}}">
-              
+                <input type="hidden" name="admin_id" value="{{$user_id}}">
                 <div class="form-group">
                     <label class="col-sm-3 control-label">文章分类</label>
                     <div class="col-sm-6">

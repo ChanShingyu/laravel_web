@@ -35,4 +35,9 @@ class Category extends Model
     public static function del($id){
     	return self::where('id',$id)->delete();
     }
+
+    const 
+        USE_ABLE =1,//可用
+        USE_DISAVLE =2,//禁用
+        END = TRUE;
 }

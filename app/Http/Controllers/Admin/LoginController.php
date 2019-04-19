@@ -116,4 +116,42 @@ class LoginController extends Controller
 
     	return redirect('/admin/login');
     }
+    //忘记密码的页面
+    public function forget(){
+        return view('admin.forget.forget');
+    }
+    //发送邮件的接口
+    public function sendEmail(Request $request){
+        $email = $request->input('email','');
+        $username = $request->input('username','');
+
+        $return =[
+            'code' =>2000,
+            'msg' =>'发送成功'
+        ];
+        //检测邮箱或者用户是否存在
+        $adminUsers = new AdminUsers();
+        $data1 = $this->getDataInfo($adminUsers,$email,'email');
+        $data2 = $this->getDataInfo($adminUsers,$username,'username');
+        if (empty($data1||empty($data2))) {
+            $return =[
+                'code' =>4000,
+                'msg' =>"用户或者邮箱不存在"
+            ];
+        }
+        $url = sprintf(env('APP_URL')."?username=%s&email=%s&activeCode=%s",$username,$email,ToolsEamil::createActiveCode());
+        //发送的是HTML邮件
+        //视图数据
+        $viewData = [
+            'url' =>'admin.forget.email',
+            'assign' =>[
+                'username' =>$username,
+                'url' =>$url,
+            ],
+        ] ;
+    }
+    //重置页面
+    public function reset(){
+        return view('admin.forget.reset');
+    }
 }

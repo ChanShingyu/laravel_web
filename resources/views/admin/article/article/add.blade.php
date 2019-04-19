@@ -13,7 +13,7 @@
 
 @section('content')
     @if(session('msg'))
-        <div class="alert alert-dange1r">
+        <div class="alert alert-danger">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
             {{ session('msg') }}
         </div>
@@ -35,7 +35,7 @@
 
             <form class="form-horizontal form-bordered" action="/admin/article/store" method="post">
                 {{csrf_field()}}
-                <input type="hidden" name="" value="">
+                <input type="hidden" name="admin_id" value="{{$user_id}}">
                 <div class="form-group">
                     <label class="col-sm-3 control-label">文章分类</label>
                     <div class="col-sm-6">
