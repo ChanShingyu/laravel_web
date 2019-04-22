@@ -32,8 +32,8 @@
                     </tr>
                     </thead>
                     <tbody>
-                @if(!empty($members))
-                  @foreach($members as $mem)
+                @if(!empty($member))
+                  @foreach($member as $mem)
                     <tr>
                         <td>{{$mem->id}}</td>
                         <td><img  style="width:60px;" src="{{$mem->image_url!="" ? $mem->image_url : '/images/photos/media2.png'}}"></td>
@@ -51,7 +51,7 @@
                 @endif
                     </tbody>
                 </table>
-                {{$members->links()}}
+                {{$member->links()}}
             </div><!-- table-responsive -->
         </div>
     </div>

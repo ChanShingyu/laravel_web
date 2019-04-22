@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\Order;
+use App\Model\Goods;
 use App\Model\OrderGoods;
 use App\Model\Region;
 use App\Model\Member;
@@ -61,7 +62,8 @@ class OrderController extends Controller
     		}
     		$exportData[] = $tmpArr;
     	}
-    	ToolsExcel::exportData($exportData,'订单数据');
+        // dd($exportData);
+    	ToolsExcel::exporData($exportData,'订单数据');
     }
     //导入的页面
     public function import(){
@@ -75,14 +77,16 @@ class OrderController extends Controller
     	if ($files->extension() != "xls" && $files->extension() != " xlsx") {
     		return redirect()->back()->with('msg','文件格式不正确，请上传xls，xlsx后缀名文件');
     	}
-    	$data = ToolsExcel::import($files);
 
-    	$order = new Order();
+    	$data = ToolsExcel::import($files);
+        
+    	$order = new Goods();
     	$orderData = [];
     	foreach ($data as $key => $value) {
     		$value['order_sn'] = "SHOP".date("Ymd").rand(100000,999999);
     		$orderData[$key] = $value;
     	}
+        
     	$res = $this->storeDataMany($order,$orderData);
     	if (!$res) {
     		return redirect()->back()->with('msg','导入失败');

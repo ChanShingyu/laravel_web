@@ -30,23 +30,8 @@ Route::prefix('study')->group(function(){
     Route::get('bonus/record/list','Study\BonusController@getBonusRecord');
    
     Route::any('get/bonus', 'Study\BonusController@getBonus'); //获取红包的路由
-     //***************************赌球路由**********************//
-    //赌球添加路由
-    Route::any('guess/add', 'Study\GuessController@add');
-    //赌球执行添加页面
-    Route::any('guess/doAdd','Study\GuessController@doAdd');
-    //赌球列表页面
-    Route::any('guess/list','Study\GuessController@list');
-    //
-    Route::any('guess/resule','Study\GuessController@checkResult');
-    //赌球添加页面doGuess
-    Route::any('guess/guess','Study\GuessController@guess');
-    //赌球添加页面
-    Route::any('guess/doGuess','Study\GuessController@doGuess');
-    //************************************************************//
+    
 });
-
-
 
 //登陆页面
 Route::get('admin/login','Admin\LoginController@index');
@@ -54,6 +39,14 @@ Route::get('admin/login','Admin\LoginController@index');
 Route::post('admin/doLogin','Admin\LoginController@doLogin');
 //用户退出
 Route::get('admin/logout','Admin\LoginController@logout');
+//忘记密码的页面
+Route::get('admin/forget/password','Admin\LoginController@forget');
+Route::post('admin/forget/sendEmail','Admin\LoginController@sendEmail');
+
+//重新设置密码
+Route::get('admin/forget/reset','Admin\LoginController@reset');
+Route::post('admin/reset/password/save','Admin\LoginController@save');
+
 
 Route::get('403',function(){
     return view('403');
@@ -97,7 +90,10 @@ Route::middleware(['admin_auth','permission_auth'])->prefix('admin')->group(func
     Route::get('/user/edit/{id}','Admin\AdminUsersController@edit')->name('admin.user.edit');
     //用户执行编辑页面
     Route::post('/user/doEdit','Admin\AdminUsersController@doEdit')->name('admin.user.doEdit');
-
+    //修改密码的页面
+    Route::get('/user/password','Admin\AdminUsersController@password')->name('admin.user.password');
+    //保存修改的密码
+    Route::post('user/password/save','Admin\AdminUsersController@updatePwd')->name('admin.user.password.save');
      /*#############################[用户相关]#############################*/
 
 
@@ -373,7 +369,7 @@ Route::middleware(['admin_auth','permission_auth'])->prefix('admin')->group(func
        //列表
       Route::get('member/list','Admin\MemberController@list')->name('admin.member.list');
       //详情
-      Route::get('member/detail{id}','Admin\MemberController@detail')->name('admin.member.detail');
+      Route::get('member/detail/{id}','Admin\MemberController@detail')->name('admin.member.detail');
        /*#############################[会员管理]#############################*/
 
        /*#############################[红包管理]#############################*/

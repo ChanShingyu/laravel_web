@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\AdminUsers;
-
+use Mail;
+use App\Tools\ToolsEmail;
 class LoginController extends Controller
 {
     //
@@ -131,15 +132,22 @@ class LoginController extends Controller
         ];
         //检测邮箱或者用户是否存在
         $adminUsers = new AdminUsers();
-        $data1 = $this->getDataInfo($adminUsers,$email,'email');
-        $data2 = $this->getDataInfo($adminUsers,$username,'username');
-        if (empty($data1||empty($data2))) {
+        $where = [
+            'username'=>$username,
+            'email'=>$email
+        ];
+
+        $data = $this->getDataInfoByWhere($adminUsers,$where);
+        if (empty($data)) {
             $return =[
                 'code' =>4000,
-                'msg' =>"用户或者邮箱不存在"
+                'msg' =>'用户或邮箱不存在'
             ];
+            return json_encode($return);
         }
-        $url = sprintf(env('APP_URL')."?username=%s&email=%s&activeCode=%s",$username,$email,ToolsEamil::createActiveCode());
+        try{
+            $url = sprintf(env('APP_URL')."/admin/forget/reset?username=%s&email=%s&activeCode=%s",
+                $username,$email,ToolsEmail::createActiveCode($username,$email));
         //发送的是HTML邮件
         //视图数据
         $viewData = [
@@ -148,10 +156,76 @@ class LoginController extends Controller
                 'username' =>$username,
                 'url' =>$url,
             ],
-        ] ;
+        ];
+        //邮件数据
+        $emailData = [
+            'email_address' =>$email,
+            'subject' =>"管理后台找回密码"
+        ];
+        //发送邮件
+        $res = ToolsEmail::sendHtmlEmail($viewData,$emailData);
+      }catch(\Exception $e){
+
+        $return = [
+            'code' =>$e->getCode(),
+            'msg' =>$e->getMessage()
+        ];
+      }
+       return json_encode($return); 
     }
     //重置页面
-    public function reset(){
-        return view('admin.forget.reset');
+    public function reset(Request $request){
+        $params = $request->all();
+        //验证参数
+        if (empty($params)) {
+            return redirect('/admin/forget/password')->with('msg','参数不能为空');
+        }
+        //验证用户的信息
+        $adminUsers = new AdminUsers();
+        $where = [
+            'username' =>$params['username'],
+            'email' =>$params['email']
+        ];
+
+        $data = $this->getDataInfoByWhere($adminUsers,$where);
+
+        if (empty($data)) {
+            return redirect('/admin/forget/password')->with('msg','用户或邮箱不存在');
+        }
+        //验证激活码
+        $key = "FORGET_".$params['username']."_".$params['email'];
+
+        $redis = new \Redis();
+        $redis->connect('127.0.0.1',6379);
+        $activeCode = $redis->get($key);
+
+        if ($activeCode != $params['activeCode']) {
+            return redirect('/admin/forget/password')->with('msg','激活码不正确');
+        }
+        return view('admin.forget.reset',$params);
+    }
+    //重新设置密码
+    public function save(Request $request){
+        $params = $request->all();
+
+        if (empty($params['password'])||empty($params['confirm_password'])) {
+            return redirect()->back()->with('msg','密码或者确认密码不一致');
+        }
+
+        if ($params['password'] != $params['confirm_password']) {
+            return redirect()->back()->with('msg','密码不一致');
+        }
+
+        $adminUsers = new AdminUsers();
+         $where = [
+            'username' =>$params['username'],
+            'email' =>$params['email']
+         ];
+        $object = $this->getDataInfoByWhere($adminUsers,$where);
+        $res = $this->storeData($object,['password' => md5($params['password'])]);
+        if (!$res) {
+            return redirect('/admin/forget/password')->with('msg','密码重置失败');
+        }
+        return redirect('/admin/login');
     }
 }

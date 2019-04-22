@@ -57,14 +57,25 @@ class Controller extends BaseController
 
     	return $info;
     }
+    //通过where条件查询记录
+    public function getDataInfoByWhere($object,$where =[] ){
+        $info = $object->where($where)->first();
+        return $info;
+    }
     //没有分页的数据列表
     public function getDataList($object,$where = []){
         $list = $object->get()->toArray();
         return $list;
     }
+    //获取限制输出的条数
+    public function getLimitDataList($object,$limit = 5,$where =[]){
+        $list = $object->where($where)->limit($limit)->get()->toArray();
+        return $list;
+    }
     //获取带有分页的数据列表
     public function getPageList($object,$where = []){
         $list = $object->where($where)
+                    ->orderBy('id','desc')
                     ->paginate(self::PAGE_SIZE);
             return $list;
     }
@@ -73,5 +84,15 @@ class Controller extends BaseController
     {
     	return $object->where($key,$id)->delete();
     }
-
+    /**
+     * @desc 接口返回json的格式数据
+     * @param array $data
+     */
+    public function returnJson($data = [])
+    {
+        if(!headers_sent()){
+            header(sprintf('%s:%s','Content-Type','application/json'));
+        }
+        exit(json_encode($data));
+    }
 }
