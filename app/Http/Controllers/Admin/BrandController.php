@@ -80,6 +80,11 @@ class BrandController extends Controller
     //修改属性的接口
     public function changeAttr(Request $request){
     	$params = $request->all();
+
+        $return =[
+            'code' =>2000,
+            'msg' =>'成功'
+        ];
     	//组装要修改的数据值
     	$data = [
     		$params['key']->$params['value'],

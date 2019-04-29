@@ -13,7 +13,7 @@
 
 Route::get('/', function () {
 
-	//echo "hello Laravel";exit;
+	
     return view('welcome');
 });
 

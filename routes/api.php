@@ -21,6 +21,7 @@ Route::any('index',function(){
 	return 'Api请求接口成功';
 });
 //*************[首页]*************//
+Route::any('home/category','Api\HomeController@category');
 //首页banner接口图
 Route::any('home/banners','Api\HomeController@banners');
 //首页最新小说的接口
@@ -44,3 +45,80 @@ Route::any('home/clicks','Api\HomeController@clicksList');
  //小说章节列表接口
  Route::any('chapter/list/{novel_id}','Api\ChapterController@chapterList');
  Route::any('chapter/info/{id}','Api\ChapterController@chapterInfo');
+
+ //评论添加接口
+Route::post('comment/add','Api\CommentController@add');
+//列表接口
+Route::post('comment/list/{novelId}','Api\CommentController@list');
+//删除接口
+Route::post('comment/del/{id}','Api\CommentController@del');
+
+/*********************###########[电商类的接口]######################**********************/
+
+Route::middleware(['api_auth'])->group(function(){
+	//商品分类的接口
+	Route::any('home/category', 'ShopApi\HomeController@category');
+	
+	//首页banner图，广告位的接口
+	Route::post('home/ad', 'ShopApi\HomeController@ad');
+
+	//商品类型接口
+	Route::post('home/goods', 'ShopApi\HomeController@goodsList');
+
+	//品牌列表接口
+	Route::post('home/brands', 'ShopApi\HomeController@brand');
+	//最新文章接口
+	Route::post('home/newsArticle', 'ShopApi\HomeController@newsArticle');
+
+	//发送短信验证码
+	Route::post('login/sendSms','ShopApi\LoginController@sendSms');
+
+	//用户注册的功能
+	Route::post('register','ShopApi\LoginController@register');
+	//用户登录的功能
+	Route::post('login','ShopApi\LoginController@login');
+	Route::post('logout','ShopApi\LoginController@logout');
+
+	//用户登录的功能
+	Route::post('token','ShopApi\LoginController@token');
+
+	//商品详情接口
+	Route::post('goods/detail/{id}','ShopApi\GoodsController@detail');
+
+	Route::any('cart/goods/attr','ShopApi\GoodsController@getGoodsAttr');
+
+	//获取用户详情信息
+	Route::post('user/info/{id}','ShopApi\UserController@userInfo');
+
+	Route::post('user/modify','ShopApi\UserController@userModify');
+	Route::post('user/fund/{user_id}','ShopApi\UserController@userFundHistory');
+	//用户中心设置地址信息
+	Route::post('user/region/{fid}','ShopApi\UserController@getRegion');
+	Route::post('user/address/add','ShopApi\UserController@addUserAddress');
+	//获取接口列表数据
+	Route::post('user/address/list/{user_id}','ShopApi\UserController@getUserAddress');
+	Route::post('set/default/address','ShopApi\UserController@setDefaultAddress');
+
+	//订单相关
+	Route::post('user/order/{user_id}','ShopApi\OrderController@userOrder');
+
+	//下订单接口
+	Route::post('create/order','ShopApi\OrderController@createOrder');
+	
+	//订单信息
+	Route::any('shipping','ShopApi\OrderController@shipping');
+	Route::post('payment','ShopApi\OrderController@payment');
+
+	//用户中心红包记录
+	Route::post('user/bonus/{user_id}','ShopApi\BonusController@userBonusList');
+
+	//支付相关的
+	Route::any('alipay','ShopApi\AlipayController@alipay');
+	Route::any('return/url','ShopApi\AlipayController@returnUrl');
+	Route::any('notify/url','ShopApi\AlipayController@notifyUrl');
+
+
+});
+
+
+/*********************###########[电商类的接口]######################**********************/

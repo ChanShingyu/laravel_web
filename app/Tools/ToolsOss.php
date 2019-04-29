@@ -25,7 +25,7 @@
  			//实例化oss客户端对象
  			$this->ossClient = new OssClient($accessKeyId,$accessKeySecret,"htto://".$this->endpoint);
  		} catch (OssException $e) {
- 			\Log::error('Oss对象存储实例化失败'，[$e->getMessage,$e->getCode()]);
+ 			\Log::error('Oss对象存储实例化失败',[$e->getMessage,$e->getCode()]);
  		}
  	}
  	///oss文件上传的函数

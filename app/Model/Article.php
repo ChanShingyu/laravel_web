@@ -32,4 +32,18 @@ class Article extends Model
     public function del($id){
     	return self::where('id',$id)->delete();
     }
+
+    
+
+    //最新文章列表
+    public function getNewArticles($limit=5,$where=[])
+    {
+        return self::select('id','title')
+                ->where($where)
+                ->orderBy('publish_at','desc')
+                ->limit($limit)
+                ->get()
+                ->toArray();
+
+    }
 }
